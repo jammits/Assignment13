@@ -55,7 +55,15 @@ public class UserController {
 		
 		return "users";
 	}
-	
+
+	@PostMapping("/users")
+	public String postSingleUserView(User user) {
+		postOneUser(user);
+
+		return "redirect:/users";
+	}
+
+
 	@GetMapping("/users/{userId}")
 	public String getOneUser (ModelMap model, @PathVariable Long userId) {
 		User user = userService.findById(userId);
