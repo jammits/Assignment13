@@ -51,16 +51,27 @@ public class UserController {
 		model.put("users", users);
 		if (users.size() == 1) {
 			model.put("user", users.iterator().next());
+
 		}
 		
 		return "users";
 	}
 
 	@PostMapping("/users")
-	public String postSingleUserView(User user) {
-		postOneUser(user);
+	public String postSingleUserView(User user, ModelMap model) {
+		User userOne = userService.findById(user.getUserId());
+		Address address = addressService.findById(userOne.getUserId());
+		address.setUser(userOne);
+		address.setUserId(userOne.getUserId());
+		userOne.setAddress(address);
+		postOneUser(userOne);
 
-		return "redirect:/users";
+		Set<User> users = userService.findAll();
+		//populating the model again to prevent no users in thymeleaf error, doesn't affect the user model only users.
+		//Allows the user model to persist and show old information
+		model.put("users", users);
+
+		return "users";
 	}
 
 
@@ -94,7 +105,7 @@ public class UserController {
 	public String showAccounts(ModelMap model, @PathVariable Long accountId, @PathVariable Long usersId) {
 		Account account = accountService.findById(accountId);
 		User user = userService.findById(usersId);
-		model.put("user", user);
+		model.put("accUser", user);
 		model.put("account", account);
 		return "accounts";
 	}
